@@ -112,12 +112,12 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 editor.apply();
                 Intent toHome = new Intent(UpdateProfileActivity.this, HomeActivity.class);
                 startActivity(toHome);
-                Toast.makeText(UpdateProfileActivity.this, "Data User berhasil diupdate", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpdateProfileActivity.this, "Data Postingan berhasil diupdate", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(Call<UpdateProfile> call, Throwable t) {
-                Toast.makeText(UpdateProfileActivity.this, "Data User Gagal diupdate", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpdateProfileActivity.this, "Data Postingan Gagal diupdate", Toast.LENGTH_SHORT).show();
             }
         });
     }

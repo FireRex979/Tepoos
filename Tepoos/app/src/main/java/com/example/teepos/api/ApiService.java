@@ -49,8 +49,16 @@ public interface ApiService {
 
   @Multipart
   @POST("postingan/store")
-  Call<StorePostingan> storePostingan(
+  Call<com.example.teepos.datasignup.storepostingan.Response> storePostingan(
           @Part("id_user") RequestBody id_user,
+          @Part("caption") RequestBody caption,
+          @Part MultipartBody.Part image
+  );
+
+  @Multipart
+  @POST("postingan/update")
+  Call<com.example.teepos.datasignup.updatePostingan.Response> updatePostingan(
+          @Part("id") RequestBody id,
           @Part("caption") RequestBody caption,
           @Part MultipartBody.Part image
   );
@@ -58,6 +66,11 @@ public interface ApiService {
   @GET("postingan/{id}")
   Call<com.example.teepos.datasignup.showPostingan.Response> showPostingan(
           @Path("id") int id
+  );
+
+  @GET("postingan/destroy/{id}")
+  Call<com.example.teepos.datasignup.deletePostingan.Response> deletePostingan(
+          @Path("id") String id
   );
 
   @Multipart
@@ -73,6 +86,7 @@ public interface ApiService {
   @GET("postingan")
   Call<Response> showPostingan();
 
+  @FormUrlEncoded
   @POST("komentar/store")
   Call<com.example.teepos.datasignup.storeKomentar.Response> storeKomentar(
           @Field("id_user") int id_user,

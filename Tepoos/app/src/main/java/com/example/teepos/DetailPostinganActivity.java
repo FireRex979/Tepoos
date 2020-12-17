@@ -1,11 +1,13 @@
 package com.example.teepos;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,6 +39,7 @@ public class DetailPostinganActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     KomentarAdapter adapter;
     ArrayList list_komentar = new ArrayList<KomentarItem>();
+    private View root;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class DetailPostinganActivity extends AppCompatActivity {
         foto_profile_iv = findViewById(R.id.foto_profile);
         komentar_et = findViewById(R.id.komentar_field);
         btn_komentar = findViewById(R.id.btn_store_komentar);
+        root = findViewById(R.id.detail_root);
 
         int id = getIntent().getIntExtra("id", 0);
         getDataPostingan(id);
@@ -78,6 +82,9 @@ public class DetailPostinganActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<com.example.teepos.datasignup.storeKomentar.Response> call, retrofit2.Response<com.example.teepos.datasignup.storeKomentar.Response> response) {
                 Toast.makeText(DetailPostinganActivity.this, "Komentar Berhasil ditambahkan", Toast.LENGTH_SHORT).show();
+                komentar_et.setText("");
+                hideKeyboardFrom(DetailPostinganActivity.this, root);
+                getDataPostingan(id_postingan);
             }
 
             @Override
@@ -101,7 +108,6 @@ public class DetailPostinganActivity extends AppCompatActivity {
                 Glide.with(DetailPostinganActivity.this).load(response.body().getPostingan().getUser().getFotoProfile()).into(foto_profile_iv);
                 list_komentar.clear();
                 list_komentar.addAll(response.body().getKomentar());
-                Log.d("Cek Komentar", response.body().getKomentar().get(0).getKomentar());
                 adapter.notifyDataSetChanged();
                 recyclerView.requestLayout();
             }
@@ -111,5 +117,10 @@ public class DetailPostinganActivity extends AppCompatActivity {
                 Toast.makeText(DetailPostinganActivity.this, "Data Tidak Ada", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static void hideKeyboardFrom(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

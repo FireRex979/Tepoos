@@ -28,6 +28,7 @@ public class LandingPage extends AppCompatActivity {
         token = preferences.getString("token_login", null);
         if(!TextUtils.isEmpty(token)){
             Intent toHome = new Intent(LandingPage.this, HomeActivity.class);
+            toHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(toHome);
         }
         btn_login = (Button) findViewById(R.id.btn_login_page);

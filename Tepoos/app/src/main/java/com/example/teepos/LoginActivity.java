@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<GetDataUser> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Data User tidak ditemukan", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, "Data Postingan tidak ditemukan", Toast.LENGTH_SHORT).show();
             }
         });
     }

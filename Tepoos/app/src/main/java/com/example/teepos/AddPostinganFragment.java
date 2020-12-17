@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
@@ -19,17 +18,25 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 
 import com.bumptech.glide.Glide;
 import com.example.teepos.api.RetrofitHelper;
-import com.example.teepos.datasignup.StorePostingan;
+import com.example.teepos.datasignup.storepostingan.Data;
+import com.example.teepos.db.Postingan;
+import com.example.teepos.db.App;
 import com.tbruyelle.rxpermissions3.RxPermissions;
 
 import java.io.File;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -65,6 +72,8 @@ public class AddPostinganFragment extends Fragment {
     ProgressDialog progressDoalog;
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
+    CompositeDisposable mDisposable;
+
     public AddPostinganFragment() {
         // Required empty public constructor
     }
@@ -106,6 +115,7 @@ public class AddPostinganFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mDisposable = new CompositeDisposable();
         preferences = getContext().getSharedPreferences("profile", Context.MODE_PRIVATE);
         btn_upload_image = view.findViewById(R.id.btn_upload_image);
         btn_upload_postingan = view.findViewById(R.id.btn_upload_postingan);
@@ -137,7 +147,7 @@ public class AddPostinganFragment extends Fragment {
                             } else {
                                 Toast.makeText(getContext(), "Tidak ada ijin kamera", Toast.LENGTH_SHORT).show();
                             }
-                });
+                        });
             }
         });
 
@@ -155,7 +165,7 @@ public class AddPostinganFragment extends Fragment {
         String id_string = Integer.toString(id);
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("foto", file.getName(), requestFile);
-        RequestBody id_user = RequestBody.create(MediaType.parse("multipart/form-data"),id_string);
+        RequestBody id_user = RequestBody.create(MediaType.parse("multipart/form-data"), id_string);
         RequestBody captions = RequestBody.create(MediaType.parse("multipart/form-data"), caption);
 
         progressDoalog.show();
@@ -164,32 +174,69 @@ public class AddPostinganFragment extends Fragment {
                 id_user,
                 captions,
                 body
-        ).enqueue(new Callback<StorePostingan>() {
+        ).enqueue(new Callback<com.example.teepos.datasignup.storepostingan.Response>() {
             @Override
-            public void onResponse(Call<StorePostingan> call, Response<StorePostingan> response) {
+            public void onResponse(Call<com.example.teepos.datasignup.storepostingan.Response> call, Response<com.example.teepos.datasignup.storepostingan.Response> response) {
                 progressDoalog.dismiss();
-                if (response.body().isSuccess()){
-                    Glide.with(getContext()).load(R.drawable.upload_image).error(R.drawable.upload_image).into(img_preview);
-
-                    HomeActivity home = new HomeActivity();
-
-                    home.toHomeFragment();
-
-                    caption_et.setText("");
-                    Toast.makeText(getContext(), "Sukses Menambahkan", Toast.LENGTH_SHORT).show();
-                }else{
+                if (response.body().isSuccess()) {
+                    simpanSqlite(response);
+                } else {
                     Toast.makeText(getContext(), "gagal Menambahkan", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<StorePostingan> call, Throwable t) {
+            public void onFailure(Call<com.example.teepos.datasignup.storepostingan.Response> call, Throwable t) {
                 progressDoalog.dismiss();
             }
         });
     }
 
-    public void openGallery(){
+    private void simpanSqlite(Response<com.example.teepos.datasignup.storepostingan.Response> response) {
+        Data data = response.body().getData();
+        Glide.with(getContext()).load(R.drawable.upload_image).error(R.drawable.upload_image).into(img_preview);
+        Postingan postingan = new Postingan();
+        postingan.setId_postingan(data.getIdPostingan());
+        postingan.setId_user(data.getIdUser());
+        postingan.setCaption(data.getCaption());
+        postingan.setFoto(data.getFoto());
+        postingan.setTgl_postingan(data.getTglPostingan());
+
+        Single.just(postingan)
+                .subscribeOn(Schedulers.io())
+                .map(new Function<Postingan, Object>() {
+                    @Override
+                    public Object apply(Postingan postingan) throws Throwable {
+                        App.db(getContext()).postinganDao().insert(postingan);
+                        return true;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Object>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                        mDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Object o) {
+                        HomeActivity home = new HomeActivity();
+
+                        home.toHomeFragment();
+
+                        caption_et.setText("");
+                        Toast.makeText(getContext(), "Sukses Menambahkan", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        Toast.makeText(getContext(), "Gagal Menambahkan", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+    }
+
+    public void openGallery() {
         easyImage.openCameraForImage(AddPostinganFragment.this);
     }
 
