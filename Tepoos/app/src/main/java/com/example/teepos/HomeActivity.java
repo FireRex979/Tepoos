@@ -24,7 +24,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        App.setupFcm(this);
         preferences = getSharedPreferences("credential_login", Context.MODE_PRIVATE);
         token_login = preferences.getString("token_login", null);
 
@@ -45,8 +45,8 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 btn_add.setColorFilter(Color.parseColor("#F0E68C"));
-                btn_profile.setColorFilter(Color.parseColor("#FFFFFF"));
-                btn_home.setColorFilter(Color.parseColor("#FFFFFF"));
+                btn_profile.setColorFilter(Color.parseColor("#195190"));
+                btn_home.setColorFilter(Color.parseColor("#195190"));
                 loadFragment(new AddPostinganFragment());
             }
         });
@@ -54,17 +54,17 @@ public class HomeActivity extends AppCompatActivity {
         btn_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn_add.setColorFilter(Color.parseColor("#FFFFFF"));
+                btn_add.setColorFilter(Color.parseColor("#195190"));
                 btn_profile.setColorFilter(Color.parseColor("#F0E68C"));
-                btn_home.setColorFilter(Color.parseColor("#FFFFFF"));
+                btn_home.setColorFilter(Color.parseColor("#195190"));
                 loadFragment(new ProfileFragment());
             }
         });
     }
 
     public void toHomeFragment(){
-        btn_add.setColorFilter(Color.parseColor("#FFFFFF"));
-        btn_profile.setColorFilter(Color.parseColor("#FFFFFF"));
+        btn_add.setColorFilter(Color.parseColor("#195190"));
+        btn_profile.setColorFilter(Color.parseColor("#195190"));
         btn_home.setColorFilter(Color.parseColor("#F0E68C"));
         loadFragment(new HomeFragment());
     }

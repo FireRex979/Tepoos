@@ -18,7 +18,6 @@ public class PosinganSendiriAdapter extends RecyclerView.Adapter<PostinganViewHo
     List<Postingan> list = new ArrayList();
     Click itemClick;
 
-
     public PosinganSendiriAdapter(List<Postingan> list, Click click) {
         this.list = list;
         this.itemClick = click;
@@ -51,6 +50,5 @@ public class PosinganSendiriAdapter extends RecyclerView.Adapter<PostinganViewHo
     public int getItemCount() {
         return list.size();
     }
-
 
 }

@@ -30,6 +30,7 @@ public class LandingPage extends AppCompatActivity {
             Intent toHome = new Intent(LandingPage.this, HomeActivity.class);
             toHome.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(toHome);
+            finishAffinity();
         }
         btn_login = (Button) findViewById(R.id.btn_login_page);
         btn_sign_up = (TextView) findViewById(R.id.btn_sign_up);

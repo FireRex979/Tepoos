@@ -1,11 +1,14 @@
 package com.example.teepos;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -41,6 +44,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
         preferences = getSharedPreferences("profile", Context.MODE_PRIVATE);
         String oldNama = preferences.getString("nama", null);
         String oldTglLahir = preferences.getString("tgl_lahir", null);
+        String kelamin = preferences.getString("kelamin", null);
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         nama_et = (EditText) findViewById(R.id.nama_et);
         nama_et.setText(oldNama);
@@ -48,6 +52,11 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
         tgl_lahir_et = (EditText) findViewById(R.id.tgl_lahir_et);
         tgl_lahir_et.setText(oldTglLahir);
+        if(kelamin.equals("l")){
+            gender.check(R.id.male);
+        }else if(kelamin.equals("p")){
+            gender.check(R.id.female);
+        }
 
         tgl_lahir_et.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,21 +69,59 @@ public class UpdateProfileActivity extends AppCompatActivity {
         btn_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int id = preferences.getInt("id", 0);
-                String nama = nama_et.getText().toString();
-                String tgl_lahir = tgl_lahir_et.getText().toString();
-                int selectedId = gender.getCheckedRadioButtonId();
-                RadioButton genderButton = (RadioButton) findViewById(selectedId);
-                String kelamin = genderButton.getText().toString();
-                asyncUpdateProfile(
-                        id,
-                        nama,
-                        tgl_lahir,
-                        kelamin
-                );
+                if(isNetworkConnected()){
+                    showDialog();
+                }else{
+                    Toast.makeText(UpdateProfileActivity.this, "Tidak ada koneksi internet, update profile gagal", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
     }
+
+    private void showDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                this);
+
+        // set title dialog
+        alertDialogBuilder.setTitle("Update Profile");
+
+        // set pesan dari dialog
+        alertDialogBuilder
+                .setMessage("Anda yakin ingin mengupdate Profile?")
+                .setCancelable(false)
+                .setPositiveButton("Ya",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // jika tombol diklik, maka akan menutup activity ini
+                        id = preferences.getInt("id", 0);
+                        String nama = nama_et.getText().toString();
+                        String tgl_lahir = tgl_lahir_et.getText().toString();
+                        int selectedId = gender.getCheckedRadioButtonId();
+                        RadioButton genderButton = (RadioButton) findViewById(selectedId);
+                        String kelamin = genderButton.getText().toString();
+                        asyncUpdateProfile(
+                                id,
+                                nama,
+                                tgl_lahir,
+                                kelamin
+                        );
+                    }
+                })
+                .setNegativeButton("Tidak",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // jika tombol ini diklik, akan menutup dialog
+                        // dan tidak terjadi apa2
+                        dialog.cancel();
+                    }
+                });
+
+        // membuat alert dialog dari builder
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // menampilkan alert dialog
+        alertDialog.show();
+    }
+
     private void showDateDialog(){
         Calendar newCalendar = Calendar.getInstance();
         datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -110,15 +157,20 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 editor.putString("tgl_lahir", tgl_lahir);
                 editor.putString("kelamin", kelamin);
                 editor.apply();
-                Intent toHome = new Intent(UpdateProfileActivity.this, HomeActivity.class);
-                startActivity(toHome);
-                Toast.makeText(UpdateProfileActivity.this, "Data Postingan berhasil diupdate", Toast.LENGTH_SHORT).show();
+                finish();
+                Toast.makeText(UpdateProfileActivity.this, "Data User berhasil diupdate", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(Call<UpdateProfile> call, Throwable t) {
-                Toast.makeText(UpdateProfileActivity.this, "Data Postingan Gagal diupdate", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UpdateProfileActivity.this, "Data User Gagal diupdate", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 }

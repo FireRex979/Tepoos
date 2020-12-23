@@ -2,15 +2,17 @@ package com.example.teepos;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,8 +23,6 @@ import com.bumptech.glide.Glide;
 import com.example.teepos.api.RetrofitHelper;
 import com.example.teepos.datasignup.updatePostingan.Data;
 import com.example.teepos.datasignup.updatePostingan.Response;
-import com.example.teepos.db.App;
-import com.example.teepos.db.Postingan;
 import com.tbruyelle.rxpermissions3.RxPermissions;
 
 import java.io.File;
@@ -63,7 +63,7 @@ public class DetailPostinganSendiriActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_postingan_sendiri);
         String caption_value = getIntent().getStringExtra("caption");
         String foto_value = getIntent().getStringExtra("foto");
-        id_postingan = getIntent().getStringExtra("id_postingan");
+        id_postingan = getIntent().getStringExtra("id");
         mDisposable = new CompositeDisposable();
         preferences = this.getSharedPreferences("profile", Context.MODE_PRIVATE);
         btn_upload_image = findViewById(R.id.btn_upload_image);
@@ -101,19 +101,98 @@ public class DetailPostinganSendiriActivity extends AppCompatActivity {
         });
 
         btn_upload_postingan.setOnClickListener(new View.OnClickListener() {
+            String caption = caption_et.getText().toString().trim();
             @Override
             public void onClick(View v) {
-                updatePostingan();
+                if(isNetworkConnected()){
+                    if(caption.isEmpty()){
+                        caption_et.setError("Caption tidak boleh kosong!");
+                    }else{
+                        showDialogUpdate();
+//                        updatePostingan();
+                    }
+                }else{
+                    Toast.makeText(DetailPostinganSendiriActivity.this, "Tidak ada koneksi internet, gagal mengupdate postingan.", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(DetailPostinganSendiriActivity.this, "dhuhsaidhiashdia", Toast.LENGTH_SHORT).show();
-                deletePostingan();
+                if(isNetworkConnected()){
+                    showDialogDelete();
+//                    deletePostingan();
+                }else{
+                    Toast.makeText(DetailPostinganSendiriActivity.this, "Tidak ada koneksi internet, gagal menghapus postingan.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+    }
+
+    private void showDialogDelete() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                this);
+
+        // set title dialog
+        alertDialogBuilder.setTitle("Hapus Postingan");
+
+        // set pesan dari dialog
+        alertDialogBuilder
+                .setMessage("Yakin ingin menghapus postingan?")
+                .setCancelable(false)
+                .setPositiveButton("Ya",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // jika tombol diklik, maka akan menutup activity ini
+                        deletePostingan();
+                    }
+                })
+                .setNegativeButton("Tidak",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // jika tombol ini diklik, akan menutup dialog
+                        // dan tidak terjadi apa2
+                        dialog.cancel();
+                    }
+                });
+
+        // membuat alert dialog dari builder
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // menampilkan alert dialog
+        alertDialog.show();
+    }
+
+    private void showDialogUpdate() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                this);
+
+        // set title dialog
+        alertDialogBuilder.setTitle("Update Postingan");
+
+        // set pesan dari dialog
+        alertDialogBuilder
+                .setMessage("Yakin ingin mengupdate postingan?")
+                .setCancelable(false)
+                .setPositiveButton("Ya",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // jika tombol diklik, maka akan menutup activity ini
+                        updatePostingan();
+                    }
+                })
+                .setNegativeButton("Tidak",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // jika tombol ini diklik, akan menutup dialog
+                        // dan tidak terjadi apa2
+                        dialog.cancel();
+                    }
+                });
+
+        // membuat alert dialog dari builder
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // menampilkan alert dialog
+        alertDialog.show();
     }
 
     private void updatePostingan() {
@@ -267,5 +346,11 @@ public class DetailPostinganSendiriActivity extends AppCompatActivity {
     private void onPhotosReturned(MediaFile[] imageFiles) {
         Glide.with(this).load(imageFiles[0].getFile()).error(R.drawable.upload_image).into(img_preview);
         file = imageFiles[0].getFile();
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 }

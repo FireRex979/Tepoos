@@ -29,7 +29,7 @@
                 android:layout_height="30dp"
                 android:layout_weight="5"
                 android:gravity="center|left"
-                android:textColor="#4682B4"
+                android:textColor="@color/primary"
                 android:textStyle="bold"
                 android:text="Nama User"/>
         </LinearLayout>

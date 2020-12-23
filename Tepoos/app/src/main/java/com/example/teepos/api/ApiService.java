@@ -1,12 +1,14 @@
 package com.example.teepos.api;
 
 import com.example.teepos.datasignup.GetDataUser;
+import com.example.teepos.datasignup.ReadNotif;
 import com.example.teepos.datasignup.ResponseLogin;
 import com.example.teepos.datasignup.ResponseSignUp;
 import com.example.teepos.datasignup.StorePostingan;
 import com.example.teepos.datasignup.UpdateFotoProfile;
 import com.example.teepos.datasignup.UpdateProfile;
 import com.example.teepos.datasignup.postingan.Response;
+import com.example.teepos.datasignup.postinganSendiri.DataItem;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -76,7 +78,6 @@ public interface ApiService {
   @Multipart
   @POST("user/update/foto-profile")
   Call<UpdateFotoProfile> updateFotoProfile(
-          @Part("id_user") RequestBody id_user,
           @Part MultipartBody.Part image
   );
 
@@ -94,4 +95,20 @@ public interface ApiService {
           @Field("id_postingan") int id_postingan
   );
 
+  @FormUrlEncoded
+  @POST("fcm-token")
+  Call<com.example.teepos.datasignup.storeKomentar.Response> storeTokenFcm(
+          @Field("token") String token
+  );
+
+  @GET("get-notif")
+  Call<com.example.teepos.datasignup.getnotification.Response> getNotif();
+
+  @GET("read-notif/{id}")
+  Call<ReadNotif> readNotif(
+          @Path("id") int id
+  );
+
+  @GET("postingan/user")
+  Call<com.example.teepos.datasignup.postinganSendiri.Response> getPostinganSendiri();
 }

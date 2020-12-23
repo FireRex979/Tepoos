@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -63,20 +64,25 @@ public class RegisterActivity extends AppCompatActivity {
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText nama_et = (EditText) findViewById(R.id.nama);
-                EditText email_et = (EditText) findViewById(R.id.email);
-                EditText tgl_lahir_et = (EditText) findViewById(R.id.tgl_lahir);
-                RadioGroup genderGroup = (RadioGroup) findViewById(R.id.kelamin);
-                int selectedId = genderGroup.getCheckedRadioButtonId();
-                RadioButton genderButton = (RadioButton) findViewById(selectedId);
-                EditText password_et = (EditText) findViewById(R.id.password);
-                asyncSignUp(
-                        nama_et.getText().toString(),
-                        email_et.getText().toString(),
-                        tgl_lahir_et.getText().toString(),
-                        genderButton.getText().toString(),
-                        password_et.getText().toString()
-                );
+                if(isNetworkConnected()){
+                    EditText nama_et = (EditText) findViewById(R.id.nama);
+                    EditText email_et = (EditText) findViewById(R.id.email);
+                    EditText tgl_lahir_et = (EditText) findViewById(R.id.tgl_lahir);
+                    RadioGroup genderGroup = (RadioGroup) findViewById(R.id.kelamin);
+                    int selectedId = genderGroup.getCheckedRadioButtonId();
+                    RadioButton genderButton = (RadioButton) findViewById(selectedId);
+                    EditText password_et = (EditText) findViewById(R.id.password);
+                    asyncSignUp(
+                            nama_et.getText().toString(),
+                            email_et.getText().toString(),
+                            tgl_lahir_et.getText().toString(),
+                            genderButton.getText().toString(),
+                            password_et.getText().toString()
+                    );
+                }else{
+                    Toast.makeText(RegisterActivity.this, "Tidak ada koneksi internet, Register Gagal", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
     }
@@ -96,6 +102,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String msg = "Register Berhasil, silahkan login.";
                 toLogin.putExtra("msg", msg);
                 startActivity(toLogin);
+                finishAffinity();
             }
 
             @Override
@@ -121,5 +128,11 @@ public class RegisterActivity extends AppCompatActivity {
         },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
         datePickerDialog.show();
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 }

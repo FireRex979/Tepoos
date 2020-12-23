@@ -31,7 +31,7 @@ import retrofit2.Callback;
 
 public class DetailPostinganActivity extends AppCompatActivity {
     private TextView nama_user_tv, caption_tv, tgl_postingan;
-    private ImageView foto_profile_iv, foto_postingan_iv;
+    private ImageView foto_profile_iv, foto_postingan_iv, btn_back;
     private EditText komentar_et;
     private Button btn_komentar;
     public int id_postingan;
@@ -52,6 +52,7 @@ public class DetailPostinganActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         sharedPreferences = getSharedPreferences("profile", Context.MODE_PRIVATE);
         nama_user_tv = findViewById(R.id.nama_user);
+        btn_back = findViewById(R.id.btn_back);
         caption_tv = findViewById(R.id.caption);
         tgl_postingan = findViewById(R.id.tgl_postingan);
         foto_postingan_iv = findViewById(R.id.foto_postingan);
@@ -67,6 +68,13 @@ public class DetailPostinganActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 storeKomentar();
+            }
+        });
+
+        btn_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Dao
 public interface PostinganDao {
-    @Query("SELECT * FROM postingan")
+    @Query("SELECT * FROM postingan ORDER BY id DESC")
     List<Postingan> getAll();
 
     @Query("SELECT * FROM postingan WHERE id IN (:id)")
@@ -24,6 +24,9 @@ public interface PostinganDao {
 
     @Query("DELETE FROM postingan WHERE id_postingan = :id_postingan")
     void delete(String id_postingan);
+
+    @Query("DELETE FROM postingan")
+    void truncate();
 
 }
     

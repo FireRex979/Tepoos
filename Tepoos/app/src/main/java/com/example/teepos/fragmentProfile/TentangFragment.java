@@ -1,30 +1,36 @@
 package com.example.teepos.fragmentProfile;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.teepos.HomeActivity;
 import com.example.teepos.LandingPage;
-import com.example.teepos.LoginActivity;
 import com.example.teepos.R;
 import com.example.teepos.UpdateProfileActivity;
+import com.example.teepos.App;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class TentangFragment extends Fragment {
     private SharedPreferences data_profile, credential_login;
@@ -32,6 +38,7 @@ public class TentangFragment extends Fragment {
     private Button btn_logout, btn_update_profile;
     private TextView email_et, nama_et, tgl_lahir_et, kelamin_et;
     private ImageView foto_profile_iv;
+    CompositeDisposable mDisposable;
     public TentangFragment() {
         // Required empty public constructor
     }
@@ -57,7 +64,7 @@ public class TentangFragment extends Fragment {
         String nama = data_profile.getString("nama", null);
         String tgl_lahir = data_profile.getString("tgl_lahir", null);
         String kelamin = data_profile.getString("kelamin", null);
-
+        mDisposable = new CompositeDisposable();
         email_et = (TextView) getView().findViewById(R.id.email_et);
         nama_et = (TextView) getView().findViewById(R.id.nama_et);
         tgl_lahir_et = (TextView) getView().findViewById(R.id.tgl_lahir_et);
@@ -74,7 +81,8 @@ public class TentangFragment extends Fragment {
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                logout();
+                showDialogLogout();
+//                logout();
             }
         });
 
@@ -87,6 +95,38 @@ public class TentangFragment extends Fragment {
         });
     }
 
+    private void showDialogLogout() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                getContext());
+
+        // set title dialog
+        alertDialogBuilder.setTitle("Yakin ingin Logout?");
+
+        // set pesan dari dialog
+        alertDialogBuilder
+                .setMessage("Klik Ya untuk keluar!")
+                .setCancelable(false)
+                .setPositiveButton("Ya",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // jika tombol diklik, maka akan menutup activity ini
+                        logout();
+                    }
+                })
+                .setNegativeButton("Tidak",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // jika tombol ini diklik, akan menutup dialog
+                        // dan tidak terjadi apa2
+                        dialog.cancel();
+                    }
+                });
+
+        // membuat alert dialog dari builder
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // menampilkan alert dialog
+        alertDialog.show();
+    }
+
     public void updateProfile(){
         Intent toUpdateProfile = new Intent(getContext(), UpdateProfileActivity.class);
         startActivity(toUpdateProfile);
@@ -97,7 +137,7 @@ public class TentangFragment extends Fragment {
         editor = credential_login.edit();
         editor.putString("token_login", token);
         editor.apply();
-
+        truncate();
         String nama = null;
         String email = null;
         String kelamin = null;
@@ -108,9 +148,38 @@ public class TentangFragment extends Fragment {
         editor.putString("kelamin", kelamin);
         editor.putString("tgl_lahir", tgl_lahir);
         editor.apply();
-
+        truncate();
         Intent toLandingPage = new Intent(getContext(), LandingPage.class);
         toLandingPage.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(toLandingPage);
+    }
+
+    public void truncate(){
+        Single.just(0)
+                .subscribeOn(Schedulers.io())
+                .map(new Function<Integer, Object>() {
+                    @Override
+                    public Object apply(Integer integer) throws Throwable {
+                        App.db(getContext()).postinganDao().truncate();
+                        return true;
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new SingleObserver<Object>() {
+                    @Override
+                    public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                        mDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Object o) {
+                        Toast.makeText(getContext(), "Sukses Logout", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                        Toast.makeText(getContext(), "Gagal Logout", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

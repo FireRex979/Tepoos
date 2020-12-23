@@ -28,18 +28,25 @@ public class RetrofitHelper {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
                 public void log(@NotNull String strResponse) {
-                    Log.d(TAG, strResponse);
+                    Log.d(TAG, "retrofit: " + strResponse);
                 }
             });
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
             OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(logging)
                     .addInterceptor(createHeaderInterceptor(callback))
+//                    .addNetworkInterceptor(createHeaderInterceptor(callback))
+                    .addInterceptor(logging)
+//                    .addInterceptor(new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+//                        @Override
+//                        public void log(@NotNull String str) {
+//                            Log.d(TAG, "retrofit: " + str);
+//                        }
+//                    }))
                     .build();
 
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.1.64:8000/api/")
+                    .baseUrl("http://tepoos.maggotz.my.id/api/")
                     .client(client)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "77130005903",
+    "project_id": "ims-android-emu",
+    "storage_bucket": "ims-android-emu.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77130005903:android:161b8ad250fd7a7836dffa",
+        "android_client_info": {
+          "package_name": "com.example.teepos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77130005903-vlu8rokqgli5pfe37es7cbs9k6aip4af.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0igvAFRtPdKRLxGEpzJBDSVigpvA7hFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77130005903-vlu8rokqgli5pfe37es7cbs9k6aip4af.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

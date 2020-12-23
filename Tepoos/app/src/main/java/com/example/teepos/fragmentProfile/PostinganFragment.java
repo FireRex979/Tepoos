@@ -15,12 +15,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.teepos.DetailPostinganSendiriActivity;
-import com.example.teepos.PostinganAdapter;
 import com.example.teepos.R;
 import com.example.teepos.adapter.Click;
 import com.example.teepos.adapter.PosinganSendiriAdapter;
-import com.example.teepos.datasignup.postingan.DataItem;
-import com.example.teepos.db.App;
+import com.example.teepos.App;
 import com.example.teepos.db.Postingan;
 
 import java.util.ArrayList;
@@ -116,8 +114,7 @@ public class PostinganFragment extends Fragment implements Click {
         Intent intent = new Intent(getContext(), DetailPostinganSendiriActivity.class);
         intent.putExtra("caption", data.getCaption());
         intent.putExtra("foto", data.getFoto());
-        intent.putExtra("id_postingan", data.getId_postingan());
-        Toast.makeText(getContext(), data.getId_postingan(), Toast.LENGTH_SHORT).show();
+        intent.putExtra("id", data.getId_postingan());
         startActivity(intent);
     }
 }

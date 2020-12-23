@@ -5,9 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".fragmentProfile.NotifikasiFragment">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notif_rv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ini notif"/>
+        android:orientation="vertical"/>
 
 </FrameLayout>

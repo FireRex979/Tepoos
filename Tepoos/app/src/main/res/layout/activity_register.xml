@@ -102,7 +102,7 @@
             android:paddingHorizontal="35dp"
             android:paddingVertical="5dp"
             android:textSize="15dp"
-            android:textColor="#4682B4"
+            android:textColor="#FFF"
             android:layout_marginTop="35px"/>
     </LinearLayout>
 

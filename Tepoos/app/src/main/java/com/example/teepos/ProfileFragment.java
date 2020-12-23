@@ -33,7 +33,9 @@ import com.example.teepos.fragmentProfile.TentangFragment;
 import com.tbruyelle.rxpermissions3.RxPermissions;
 
 import java.io.File;
+import java.util.Calendar;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -47,12 +49,13 @@ import retrofit2.Response;
 
 public class ProfileFragment extends Fragment {
     private Button btn_tentang, btn_postingan, btn_notifikasi, btn_ganti_profile;
-    public ImageView foto_profile_iv;
+    public CircleImageView foto_profile_iv;
     private File file;
     EasyImage easyImage;
     RxPermissions rxPermissions;
     SharedPreferences preferences;
     ProgressDialog progressDoalog;
+
     public ProfileFragment() {
         // Required empty public constructor
     }
@@ -90,9 +93,13 @@ public class ProfileFragment extends Fragment {
         progressDoalog.setMessage("Foto Sedang Diupload....");
 
         preferences = getContext().getSharedPreferences("profile", Context.MODE_PRIVATE);
+
         String foto_profile = preferences.getString("foto_profile", null);
-        foto_profile_iv = (ImageView) getView().findViewById(R.id.profileImage);
-        Glide.with(getContext()).load(foto_profile).into(foto_profile_iv);
+        foto_profile_iv = (CircleImageView) getView().findViewById(R.id.profileImage);
+        String random = String.valueOf(Calendar.getInstance().getTime().getTime());
+        Glide.with(getContext()).load(foto_profile + "" + random).error(R.drawable.profile).into(foto_profile_iv);
+        Log.d("Profile", "onViewCreated: foto_profile=" + foto_profile);
+
         btn_tentang = (Button) getView().findViewById(R.id.btn_tentang);
         btn_postingan = (Button) getView().findViewById(R.id.btn_postingan);
         btn_notifikasi = (Button) getView().findViewById(R.id.btn_notif);
@@ -192,27 +199,28 @@ public class ProfileFragment extends Fragment {
 
     private void onPhotosReturned(MediaFile[] imageFiles) {
         file = imageFiles[0].getFile();
-        uploadFotoProfile();
-        Glide.with(getContext()).load(imageFiles[0].getFile()).error(R.drawable.profile).into(foto_profile_iv);
+        int filesize = (int) (file.length()/1024)/1024;
+        if(filesize > 3){
+            Toast.makeText(getContext(), "Gambar terlalu besar!", Toast.LENGTH_SHORT).show();
+        }else {
+            uploadFotoProfile();
+            Glide.with(getContext()).load(imageFiles[0].getFile()).error(R.drawable.profile).into(foto_profile_iv);
+        }
     }
 
     private void uploadFotoProfile() {
-        int id = preferences.getInt("id", 0);
-        String id_string = Integer.toString(id);
         RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part body = MultipartBody.Part.createFormData("foto_profile", file.getName(), requestFile);
-        RequestBody id_user = RequestBody.create(MediaType.parse("multipart/form-data"),id_string);
         progressDoalog.show();
         RetrofitHelper.server(getContext()).updateFotoProfile(
-                id_user,
                 body
         ).enqueue(new Callback<UpdateFotoProfile>() {
             @Override
             public void onResponse(Call<UpdateFotoProfile> call, Response<UpdateFotoProfile> response) {
                 progressDoalog.dismiss();
-                if (response.body().isSuccess()){
+                if (response.body().isSuccess()) {
                     Toast.makeText(getContext(), "Sukses Mengganti Foto", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Glide.with(getContext()).load(R.drawable.profile).error(R.drawable.profile).into(foto_profile_iv);
                     Toast.makeText(getContext(), "Gagal Mengganti Foto", Toast.LENGTH_SHORT).show();
                 }
@@ -220,7 +228,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(Call<UpdateFotoProfile> call, Throwable t) {
-
+                Toast.makeText(getContext(), "Gagal", Toast.LENGTH_SHORT).show();
             }
         });
     }

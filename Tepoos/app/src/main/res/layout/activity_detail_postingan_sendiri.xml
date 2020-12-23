@@ -46,9 +46,11 @@
                 android:id="@+id/btn_upload_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Upload Gambar"
-                android:background="@drawable/btn_primary"
-                android:paddingHorizontal="30dp"/>
+                android:paddingVertical="5dp"
+                android:elevation="20dp"
+                android:drawableLeft="@drawable/ic_baseline_photo_camera_24"
+                android:background="@drawable/btn_default"
+                android:paddingLeft="20dp"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,6 +62,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Caption"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
                     android:layout_marginBottom="10dp"
                     android:textSize="18dp"/>
                 <EditText
@@ -86,6 +90,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:textColor="#FFF"
                     android:background="@drawable/btn_primary"
                     android:layout_marginBottom="10dp"
                     android:text="Update Postingan"/>
@@ -97,7 +102,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:background="@drawable/btn_primary"
+                    android:background="@drawable/btn_danger"
                     android:layout_marginBottom="10dp"
                     android:text="Delete Postingan"/>
             </LinearLayout>
