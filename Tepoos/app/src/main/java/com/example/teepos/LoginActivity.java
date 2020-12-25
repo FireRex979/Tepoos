@@ -186,7 +186,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Object o) {
-                        Toast.makeText(LoginActivity.this, "Sukses Menambahkan", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(LoginActivity.this, "Sukses Menambahkan", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

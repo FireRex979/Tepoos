@@ -36,7 +36,7 @@ public class PosinganSendiriAdapter extends RecyclerView.Adapter<PostinganViewHo
         holder.nama_user_tv.setText(holder.preferences.getString("nama", null));
         holder.caption_tv.setText(m.getCaption());
         holder.tgl_postingan_tv.setText(m.getTgl_postingan());
-        Glide.with(holder.foto_profile.getContext()).load("http://192.168.1.64:8000/api/user/get-foto-profile/"+holder.preferences.getInt("id", 0)).error(R.drawable.profile).into(holder.foto_profile);
+        Glide.with(holder.foto_profile.getContext()).load("http://tepoos.maggotz.my.id/api/user/get-foto-profile/"+holder.preferences.getInt("id", 0)).error(R.drawable.profile).into(holder.foto_profile);
         Glide.with(holder.foto_postingan.getContext()).load(m.getFoto()).error(R.drawable.upload_image).into(holder.foto_postingan);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

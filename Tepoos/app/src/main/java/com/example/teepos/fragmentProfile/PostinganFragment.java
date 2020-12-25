@@ -68,8 +68,6 @@ public class PostinganFragment extends Fragment implements Click {
         adapter = new PosinganSendiriAdapter(listPosting, this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-
-
     }
 
     private void getDataPostingan() {

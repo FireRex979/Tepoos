@@ -1,8 +1,11 @@
-package com.example.teepos.datasignup;
+package com.example.teepos.datasignup.postinganbaru;
 
 import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
 public class Response{
+
+	@SerializedName("data")
 	private List<DataItem> data;
 
 	public void setData(List<DataItem> data){

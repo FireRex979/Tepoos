@@ -111,4 +111,7 @@ public interface ApiService {
 
   @GET("postingan/user")
   Call<com.example.teepos.datasignup.postinganSendiri.Response> getPostinganSendiri();
+
+  @GET("postingan/offline")
+  Call<com.example.teepos.datasignup.postinganbaru.Response> getPostinganBaru();
 }
