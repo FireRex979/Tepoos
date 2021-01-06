@@ -43,7 +43,7 @@ public class App extends Application {
                 ).enqueue(new Callback<Response>() {
                     @Override
                     public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                        Log.d("FCM", "onResponse: ");
+                        Log.d("FCM", "onResponse: "+token);
                         asyncSendFcmToken(context, token);
                     }
 

@@ -35,7 +35,7 @@ public interface ApiService {
 
   @FormUrlEncoded
   @POST("login")
-  Call<ResponseLogin> login(
+  Call<com.example.teepos.datasignup.login.Response> login(
           @Field("email") String email,
           @Field("password") String password
   );

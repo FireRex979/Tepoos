@@ -89,19 +89,25 @@ public class LoginActivity extends AppCompatActivity {
         RetrofitHelper.server(this).login(
                 email,
                 password
-        ).enqueue(new Callback<ResponseLogin>() {
+        ).enqueue(new Callback<com.example.teepos.datasignup.login.Response>() {
             @Override
-            public void onResponse(Call<ResponseLogin> call, Response<ResponseLogin> response) {
-                String token = response.body().getToken();
-                editor = preferences.edit();
-                editor.putString("token_login", token);
-                editor.apply();
-                asyncGetUserData();
+            public void onResponse(Call<com.example.teepos.datasignup.login.Response> call, Response<com.example.teepos.datasignup.login.Response> response) {
+                if(response.code() <= 400){
+                    String token = response.body().getAccessToken();
+                    editor = preferences.edit();
+                    editor.putString("token_login", token);
+                    editor.apply();
+                    asyncGetUserData();
+                }else{
+                    Toast.makeText(LoginActivity.this, "Gagal Login", Toast.LENGTH_SHORT).show();
+                    progressDoalog.dismiss();
+                }
             }
 
             @Override
-            public void onFailure(Call<ResponseLogin> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Gagal Login", Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<com.example.teepos.datasignup.login.Response> call, Throwable t) {
+                Toast.makeText(LoginActivity.this, "Gagal Login : "+t, Toast.LENGTH_SHORT).show();
+                progressDoalog.dismiss();
             }
         });
     }
